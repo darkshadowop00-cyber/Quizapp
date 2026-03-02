@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - QuizMaster{% endblock %}
+
+{% block extra_css %}
+.auth-card {
+    max-width: 400px;
+    margin: 4rem auto;
+}
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+}
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+}
+.form-group input:focus {
+    border-color: var(--primary);
+}
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+.auth-footer a {
+    color: var(--primary);
+    text-decoration: none;
+}
+{% endblock %}
+
+{% block content %}
+<div class="card auth-card">
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: var(--secondary); font-size: 0.875rem;">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+    </form>
+    <div class="auth-footer">
+        Don't have an account? <a href="{% url 'register' %}">Signup</a>
+    </div>
+</div>
+{% endblock %}

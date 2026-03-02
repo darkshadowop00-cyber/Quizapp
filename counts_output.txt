@@ -1,0 +1,31 @@
+------------------------------
+Category             | Questions 
+------------------------------
+Technology           | 35        
+General Knowledge    | 35        
+Science              | 35        
+History              | 35        
+Sports               | 34        
+Geography            | 20        
+Literature           | 32        
+Movies               | 35        
+FLAT                 | 35        
+Compiler Design      | 34        
+Operating Systems    | 35        
+DBMS                 | 34        
+C Programming        | 35        
+C++ Programming      | 35        
+Java Programming     | 34        
+HTML                 | 33        
+CSS                  | 34        
+JavaScript           | 35        
+Software Design      | 35        
+Cloud Computing      | 35        
+Physics              | 35        
+Chemistry            | 35        
+Machine Learning     | 35        
+GATE                 | 35        
+Basic Grammar        | 35        
+------------------------------
+TOTAL                | 850       
+------------------------------

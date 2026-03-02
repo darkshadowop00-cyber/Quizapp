@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - QuizMaster{% endblock %}
+
+{% block extra_css %}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.stat-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid #334155;
+    text-align: center;
+}
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: block;
+}
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.attempts-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+.attempts-table th, .attempts-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #334155;
+}
+.attempts-table th {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+.score-pill {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+.score-high { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.score-mid { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+.score-low { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+{% endblock %}
+
+{% block content %}
+<h1>User Dashboard</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ total_attempts }}</span>
+        <span class="stat-label">Quizzes Taken</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ avg_score|floatformat:1 }}%</span>
+        <span class="stat-label">Average Score</span>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Recent Attempts</h3>
+    {% if attempts %}
+        <div style="overflow-x: auto;">
+            <table class="attempts-table">
+                <thead>
+                    <tr>
+                        <th>Quiz</th>
+                        <th>Score</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in attempts %}
+                        <tr>
+                            <td>{{ attempt.quiz.title }}</td>
+                            <td>
+                                <span class="score-pill {% if attempt.score == attempt.total_questions %}score-high{% elif attempt.score > attempt.total_questions|divisibleby:2 %}score-mid{% else %}score-low{% endif %}">
+                                    {{ attempt.score }}/{{ attempt.total_questions }}
+                                </span>
+                            </td>
+                            <td>{{ attempt.timestamp|date:"M d, Y" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted);">You haven't taken any quizzes yet.</p>
+        <a href="{% url 'quiz_list' %}" class="btn btn-primary" style="margin-top: 1rem;">Browse Quizzes</a>
+    {% endif %}
+</div>
+{% endblock %}
