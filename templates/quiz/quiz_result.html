@@ -3,87 +3,128 @@
 {% block title %}Results - {{ quiz.title }}{% endblock %}
 
 {% block content %}
-<div class="card" style="text-align: center; max-width: 600px; margin: 4rem auto;">
+<div class="glass-card animate-fade-in" style="max-width: 800px; margin: 2rem auto; text-align: center;">
     <div style="margin-bottom: 2rem;">
-        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Quiz Result</h1>
-        <p style="color: var(--text-muted);">{{ quiz.title }}</p>
+        <span class="category-tag">{{ quiz.category.name }}</span>
+        <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(to right, var(--primary-light), var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+            Quiz Completed!
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem;">{{ quiz.title }}</p>
     </div>
 
-    <div style="position: relative; width: 200px; height: 200px; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; background: rgba(99, 102, 241, 0.1); border-radius: 50%; border: 4px solid var(--primary);">
-        <div style="text-align: center;">
-            <span style="display: block; font-size: 3rem; font-weight: 700;">{{ percentage|floatformat:0 }}%</span>
-            <span style="font-size: 1rem; color: var(--text-muted);">Score</span>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 4rem; margin-bottom: 3rem; flex-wrap: wrap;">
+        <!-- Circular Score Visual -->
+        <div style="position: relative; width: 180px; height: 180px;">
+            <svg style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                <circle cx="90" cy="90" r="80" fill="none" stroke="var(--glass-heavy)" stroke-width="12"></circle>
+                <circle cx="90" cy="90" r="80" fill="none" stroke="url(#scoreGradient)" stroke-width="12" 
+                        stroke-dasharray="502.65" stroke-dashoffset="{{ 502.65|add:percentage_offset }}"
+                        stroke-linecap="round" style="transition: stroke-dashoffset 1.5s ease-out;"></circle>
+                <defs>
+                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:var(--primary)" />
+                        <stop offset="100%" style="stop-color:var(--accent)" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <span style="display: block; font-size: 2.5rem; font-weight: 800; color: var(--text);">{{ percentage|floatformat:0 }}%</span>
+                <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Score</span>
+            </div>
+        </div>
+
+        <div style="text-align: left;">
+            <div style="margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Good Work!</h2>
+                <p style="color: var(--text-muted);">You got {{ score }} out of {{ total }} questions correct.</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'quiz_take' quiz.slug %}" class="btn btn-secondary">Try Again</a>
+                <a href="{% url 'quiz_list' %}" class="btn btn-primary">Next Quiz</a>
+            </div>
         </div>
     </div>
 
-    <div style="margin-bottom: 2.5rem;">
-        <h2 style="font-size: 1.5rem;">You got {{ score }} out of {{ total }} correct!</h2>
-        
-        <p style="margin-top: 1rem;">
-            {% if percentage >= 80 %}
-                🏆 Amazing! You're a true master.
-            {% elif percentage >= 50 %}
-                👏 Good job! You have a solid understanding.
-            {% else %}
-                📚 Keep practicing! You'll get there.
-            {% endif %}
-        </p>
-    </div>
-
-    <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 3rem;">
-        <a href="{% url 'quiz_take' quiz.slug %}" class="btn" style="border: 1px solid var(--primary); color: var(--text);">Try Again</a>
-        <a href="{% url 'quiz_list' %}" class="btn btn-primary">Browse More Quizzes</a>
-    </div>
-
-    <div style="text-align: left; margin-top: 3rem;">
-        <h3 style="margin-bottom: 1.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">Answer Breakdown</h3>
-        {% for item in breakdown %}
-            <div style="margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 0.75rem; background: rgba(30, 41, 59, 0.5); border: 1px solid {% if item.is_correct %}#22c55e33{% else %}#ef444433{% endif %};">
-                <p style="font-weight: 600; margin-bottom: 0.75rem;">{{ forloop.counter }}. {{ item.question }}</p>
-                
-                <div style="font-size: 0.95rem;">
-                    <p style="margin-bottom: 0.25rem;">
-                        <span style="color: var(--text-muted);">Your answer:</span> 
-                        <span style="color: {% if item.is_correct %}#4ade80{% else %}#fca5a5{% endif %}; font-weight: 500;">{{ item.selected_answer }}</span>
-                        {% if item.is_correct %} ✅ {% else %} ❌ {% endif %}
-                    </p>
-                    {% if not item.is_correct %}
-                        <p style="color: var(--text-muted);">
-                            <span>Correct answer:</span>
-                            <span style="color: #4ade80; font-weight: 500;">{{ item.correct_answer }}</span>
-                        </p>
-                    {% endif %}
-                </div>
+    {% if percentage >= 60 %}
+    <div style="border-top: 1px solid var(--card-border); padding-top: 2rem; margin-top: 2rem;">
+        <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem; color: var(--text);">Badges Earned</h3>
+        <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+            {% if percentage >= 60 %}
+            <div class="badge-item badge-tier-bronze animate-fade-in" style="animation-delay: 0.5s;">
+                <span class="badge-icon">🥉</span>
+                <span class="badge-name">Bronze</span>
             </div>
-        {% endfor %}
+            {% endif %}
+            {% if percentage >= 80 %}
+            <div class="badge-item badge-tier-silver animate-fade-in" style="animation-delay: 0.7s;">
+                <span class="badge-icon">🥈</span>
+                <span class="badge-name">Silver</span>
+            </div>
+            {% endif %}
+            {% if percentage >= 100 %}
+            <div class="badge-item badge-tier-gold animate-fade-in" style="animation-delay: 0.9s;">
+                <span class="badge-icon">🥇</span>
+                <span class="badge-name">Gold</span>
+            </div>
+            {% endif %}
+        </div>
     </div>
+    {% endif %}
 </div>
 
-{% if percentage == 100 %}
+<div style="max-width: 800px; margin: 3rem auto;">
+    <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Breakdown</h3>
+    {% for item in breakdown %}
+    <div class="glass-card animate-fade-in" style="margin-bottom: 1rem; padding: 1.5rem; border-left: 4px solid {% if item.is_correct %}var(--success){% else %}var(--danger){% endif %};">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+            <p style="font-weight: 600; font-size: 1.05rem;">{{ forloop.counter }}. {{ item.question }}</p>
+            {% if item.is_correct %}
+                <span style="color: var(--success); font-weight: 700;">CORRECT</span>
+            {% else %}
+                <span style="color: var(--danger); font-weight: 700;">INCORRECT</span>
+            {% endif %}
+        </div>
+        
+        <div style="margin-top: 1rem; font-size: 0.95rem;">
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <span style="color: var(--text-muted);">Your Choice:</span>
+                <span style="color: {% if item.is_correct %}var(--success){% else %}var(--danger){% endif %}; font-weight: 600;">{{ item.selected_answer }}</span>
+            </div>
+            {% if not item.is_correct %}
+            <div style="display: flex; gap: 0.5rem;">
+                <span style="color: var(--text-muted);">Correct Answer:</span>
+                <span style="color: var(--success); font-weight: 600;">{{ item.correct_answer }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
+    {% if percentage >= 60 %}
     window.onload = function() {
-        var duration = 5 * 1000;
-        var animationEnd = Date.now() + duration;
-        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+        const duration = 3 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
         function randomInRange(min, max) {
-          return Math.random() * (max - min) + min;
+            return Math.random() * (max - min) + min;
         }
 
-        var interval = setInterval(function() {
-          var timeLeft = animationEnd - Date.now();
+        const interval = setInterval(function() {
+            const timeLeft = animationEnd - Date.now();
 
-          if (timeLeft <= 0) {
-            return clearInterval(interval);
-          }
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
 
-          var particleCount = 50 * (timeLeft / duration);
-          // since particles fall down, start a bit higher than random
-          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            const particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
         }, 250);
     };
+    {% endif %}
 </script>
-{% endif %}
 {% endblock %}

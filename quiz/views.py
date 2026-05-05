@@ -5,6 +5,9 @@ from django.contrib.auth import login
 from .forms import UserRegistrationForm
 from .models import Quiz, Question, Answer, QuizAttempt, Badge, UserProfile
 
+def landing_page(request):
+    return render(request, 'quiz/landing_page.html')
+
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -23,14 +26,27 @@ def quiz_list(request):
 @login_required
 def dashboard(request):
     attempts = QuizAttempt.objects.filter(user=request.user)
+    
+    # Decorate attempts with percentage for the template
+    decorated_attempts = []
+    for attempt in attempts:
+        percent = (attempt.score / attempt.total_questions * 100) if attempt.total_questions > 0 else 0
+        decorated_attempts.append({
+            'quiz': attempt.quiz,
+            'score': attempt.score,
+            'total_questions': attempt.total_questions,
+            'timestamp': attempt.timestamp,
+            'percent': percent
+        })
+
     total_attempts = attempts.count()
     if total_attempts > 0:
-        avg_score = sum([a.score / a.total_questions for a in attempts]) / total_attempts * 100
+        avg_score = sum([a.score / a.total_questions for a in attempts if a.total_questions > 0]) / total_attempts * 100
     else:
         avg_score = 0
         
     return render(request, 'quiz/dashboard.html', {
-        'attempts': attempts,
+        'attempts': decorated_attempts,
         'total_attempts': total_attempts,
         'avg_score': avg_score
     })
@@ -39,6 +55,8 @@ def dashboard(request):
 def profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     badges = user_profile.badges.all()
+    earned_badge_ids = list(badges.values_list('id', flat=True))
+    all_badges = Badge.objects.select_related('category').order_by('category__name', 'min_score')
     
     attempts = QuizAttempt.objects.filter(user=request.user)
     total_attempts = attempts.count()
@@ -50,6 +68,8 @@ def profile(request):
     return render(request, 'quiz/profile.html', {
         'profile': user_profile,
         'badges': badges,
+        'earned_badge_ids': earned_badge_ids,
+        'all_badges': all_badges,
         'total_attempts': total_attempts,
         'avg_score': avg_score
     })
@@ -88,11 +108,13 @@ def quiz_take(request, quiz_slug):
             total_questions=total
         )
         
-        # Award badge for perfect score
-        if score == total and total > 0:
-            user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-            if hasattr(quiz.category, 'badge'):
-                user_profile.badges.add(quiz.category.badge)
+        # Award badges based on score
+        if total > 0:
+            score_percent = (score / total) * 100
+            user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+            eligible_badges = quiz.category.badges.filter(min_score__lte=score_percent)
+            if eligible_badges.exists():
+                user_profile.badges.add(*eligible_badges)
                 
         
         # Track recently seen questions to avoid repetition in next attempt
@@ -150,6 +172,8 @@ def quiz_result(request, quiz_slug):
     question_ids = request.session.get(f'quiz_active_questions_{quiz.id}', [])
     
     percentage = (score / total * 100) if total > 0 else 0
+    # Circumference for r=80 is 2 * pi * 80 = 502.65
+    percentage_offset = 502.65 * (1 - percentage / 100)
     
     # Prepare breakdown based on the specific questions asked
     breakdown = []
@@ -161,7 +185,10 @@ def quiz_result(request, quiz_slug):
         selected_answer_id = selections.get(str(question.id))
         selected_answer = None
         if selected_answer_id:
-            selected_answer = Answer.objects.get(id=selected_answer_id)
+            try:
+                selected_answer = Answer.objects.get(id=selected_answer_id)
+            except Answer.DoesNotExist:
+                pass
         
         correct_answer = question.answers.filter(is_correct=True).first()
         
@@ -177,5 +204,6 @@ def quiz_result(request, quiz_slug):
         'score': score,
         'total': total,
         'percentage': percentage,
+        'percentage_offset': percentage_offset,
         'breakdown': breakdown
     })

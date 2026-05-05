@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to QuizMaster{% endblock %}
+
+{% block content %}
+<div class="hero-section animate-fade-in">
+    <!-- Dynamic Background Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="glass-card" style="position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 4rem 2rem;">
+        <h1 class="hero-title">Master Knowledge, Earn Badges</h1>
+        <p class="hero-subtitle">Dive into our expansive library of quizzes. Test your skills, track your progress, and earn spectacular badges to showcase your expertise.</p>
+        
+        <div class="hero-actions">
+            <a href="{% url 'quiz_list' %}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">Start Quizzing Now</a>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 2rem;">Sign Up Free</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="features-grid animate-fade-in" style="animation-delay: 0.2s;">
+    <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3 class="feature-title">Vast Categories</h3>
+        <p class="feature-desc">From Math to Anime, explore questions across hundreds of carefully curated topics.</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">🏅</div>
+        <h3 class="feature-title">Tiered Badges</h3>
+        <p class="feature-desc">Achieve high scores to unlock exclusive Gold, Silver, and Bronze badges for each category.</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3 class="feature-title">Track Progress</h3>
+        <p class="feature-desc">Monitor your performance with detailed analytics on your personal dashboard.</p>
+    </div>
+</div>
+{% endblock %}

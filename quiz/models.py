@@ -61,13 +61,20 @@ class QuizAttempt(models.Model):
         ordering = ['-timestamp']
 
 class Badge(models.Model):
+    TIER_CHOICES = [
+        ('BRONZE', 'Bronze'),
+        ('SILVER', 'Silver'),
+        ('GOLD', 'Gold'),
+    ]
     name = models.CharField(max_length=100)
     description = models.TextField()
-    category = models.OneToOneField(Category, on_delete=models.CASCADE, related_name='badge')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='badges')
     icon = models.CharField(max_length=10, default='🏆', help_text="Emoji or short text for the badge icon")
+    min_score = models.IntegerField(default=100, help_text="Minimum score percentage to earn this badge")
+    tier = models.CharField(max_length=10, choices=TIER_CHOICES, default='GOLD')
 
     def __str__(self):
-        return f"{self.name} ({self.category.name})"
+        return f"{self.name} ({self.category.name} - {self.tier})"
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')

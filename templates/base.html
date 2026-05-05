@@ -4,113 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Quiz App{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            line-height: 1.6;
-        }
-
-        nav {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        nav a {
-            color: var(--text);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.25rem;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 1rem;
-            padding: 2rem;
-            border: 1px solid #334155;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        h1, h2, h3 {
-            margin-top: 0;
-        }
-
-        {% block extra_css %}{% endblock %}
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'quiz/css/style.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <nav>
-        <a href="{% url 'quiz_list' %}">QuizMaster</a>
-        <div>
+        <a href="{% url 'landing_page' %}" class="logo">QuizMaster</a>
+        <div class="nav-links">
+            <a href="{% url 'quiz_list' %}" class="nav-link">Quizzes</a>
             {% if user.is_authenticated %}
-                <span style="margin-right: 1rem; color: var(--text-muted);">Hello, {{ user.username }}</span>
-                <a href="{% url 'profile' %}" style="margin-right: 1.5rem; -webkit-text-fill-color: var(--text); font-size: 1rem;">My Profile</a>
-                <a href="{% url 'dashboard' %}" style="margin-right: 1.5rem; -webkit-text-fill-color: var(--text); font-size: 1rem;">Dashboard</a>
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn" style="background: none; color: var(--text); padding: 0; font-size: 1rem; cursor: pointer;">Logout</button>
+                    <button type="submit" class="nav-link" style="background: none; border: none; cursor: pointer; font-family: inherit;">Logout</button>
                 </form>
             {% else %}
-                <a href="{% url 'login' %}" style="-webkit-text-fill-color: var(--text); font-size: 1rem; margin-right: 1.5rem;">Login</a>
-                <a href="{% url 'register' %}" class="btn btn-primary" style="font-size: 0.9rem; padding: 0.5rem 1rem;">Signup</a>
+                <a href="{% url 'login' %}" class="nav-link">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-primary" style="padding: 0.5rem 1rem;">Sign Up</a>
             {% endif %}
         </div>
     </nav>

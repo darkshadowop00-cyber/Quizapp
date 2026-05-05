@@ -3,28 +3,31 @@
 {% block title %}Available Quizzes - QuizMaster{% endblock %}
 
 {% block content %}
-<div style="margin-bottom: 2rem; border-bottom: 1px solid #334155; padding-bottom: 1rem;">
-    <h1 style="font-size: 2.5rem; background: linear-gradient(to right, #818cf8, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Available Quizzes</h1>
-    <p style="color: var(--text-muted);">Test your knowledge with our curated quizzes.</p>
+<div class="animate-fade-in" style="margin-bottom: 3rem;">
+    <h1 style="font-size: 3rem; font-weight: 800; background: linear-gradient(to right, var(--primary-light), var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.025em; margin-bottom: 0.5rem;">Explore Quizzes</h1>
+    <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px;">Sharpen your skills and earn legendary badges. Choose a challenge below to get started.</p>
 </div>
 
-<div class="grid">
+<div class="quiz-grid">
     {% for quiz in quizzes %}
-    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-            <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--secondary); font-weight: 600;">{{ quiz.category.name }}</span>
-            <h3 style="margin: 0.5rem 0; font-size: 1.5rem;">{{ quiz.title }}</h3>
-            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">{{ quiz.description }}</p>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.85rem; color: var(--text-muted);">{{ quiz.questions.count }} Questions</span>
-            <a href="{% url 'quiz_take' quiz.slug %}" class="btn btn-primary">Start Quiz</a>
+    <div class="glass-card quiz-card animate-fade-in" style="animation-delay: {{ forloop.counter0|add:0.1 }}s;">
+        <span class="category-tag">{{ quiz.category.name }}</span>
+        <h3 class="quiz-title">{{ quiz.title }}</h3>
+        <p class="quiz-desc">{{ quiz.description }}</p>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                <span style="font-size: 1.2rem;">📝</span>
+                <span>{{ quiz.questions.count }} Questions</span>
+            </div>
+            <a href="{% url 'quiz_take' quiz.slug %}" class="btn btn-primary">Start Now</a>
         </div>
     </div>
     {% empty %}
-    <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
-        <h2 style="color: var(--text-muted);">No quizzes available yet.</h2>
-        <p>Check back soon or add some via the admin panel!</p>
+    <div class="glass-card" style="grid-column: 1 / -1; text-align: center; padding: 5rem 2rem;">
+        <div style="font-size: 4rem; margin-bottom: 1.5rem;">🚀</div>
+        <h2 style="color: var(--text); margin-bottom: 1rem;">No quizzes found</h2>
+        <p style="color: var(--text-muted);">We're currently crafting new challenges for you. Check back very soon!</p>
     </div>
     {% endfor %}
 </div>
